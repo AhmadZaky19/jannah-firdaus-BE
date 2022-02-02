@@ -56,6 +56,20 @@ module.exports = {
         }
       );
     }),
+  getProductByProductName: (productName) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT * FROM product WHERE productName = ?",
+        productName,
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(`SQL: ${error.sqlMassage}`));
+          }
+        }
+      );
+    }),
   updateProduct: (data, id) =>
     new Promise((resolve, reject) => {
       connection.query(

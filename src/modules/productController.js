@@ -7,11 +7,22 @@ module.exports = {
   postProduct: async (req, res) => {
     try {
       const { productName, price, stock } = req.body;
+      const checkProduct = await productModel.getProductByProductName(
+        productName
+      );
       if (productName.length < 1 || price.length < 1 || stock.length < 1) {
         return helperWrapper.response(
           res,
           400,
           "All input must be filled",
+          null
+        );
+      }
+      if (checkProduct.length > 1) {
+        return helperWrapper.response(
+          res,
+          404,
+          `Data with name ${productName} already exist !`,
           null
         );
       }
