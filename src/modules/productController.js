@@ -124,4 +124,35 @@ module.exports = {
       );
     }
   },
+  deleteProduct: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const checkId = await productModel.getProductById(id);
+      if (checkId.length < 1) {
+        return helperWrapper.response(
+          res,
+          404,
+          `Data by id ${id} not found !`,
+          null
+        );
+      }
+      if (checkId[0].productImage) {
+        deleteFile(`public/uploads/${checkId[0].productImage}`);
+      }
+      const result = await productModel.deleteProduct(id);
+      return helperWrapper.response(
+        res,
+        200,
+        `Success delete data by id ${id}`,
+        result
+      );
+    } catch (error) {
+      return helperWrapper.response(
+        res,
+        400,
+        `Bad request (${error.message})`,
+        null
+      );
+    }
+  },
 };
