@@ -42,4 +42,36 @@ module.exports = {
         }
       );
     }),
+  getProductById: (id) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        "SELECT * FROM product WHERE id = ?",
+        id,
+        (error, result) => {
+          if (!error) {
+            resolve(result);
+          } else {
+            reject(new Error(`SQL: ${error.sqlMassage}`));
+          }
+        }
+      );
+    }),
+  updateProduct: (data, id) =>
+    new Promise((resolve, reject) => {
+      connection.query(
+        "UPDATE product SET ? WHERE id = ?",
+        [data, id],
+        (error) => {
+          if (!error) {
+            const newResult = {
+              id,
+              ...data,
+            };
+            resolve(newResult);
+          } else {
+            reject(new Error(`SQL : ${error.sqlMessage}`));
+          }
+        }
+      );
+    }),
 };

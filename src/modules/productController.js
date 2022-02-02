@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const productModel = require("./productModel");
 const helperWrapper = require("../helpers/wrapper");
-// const deleteFile = require("../helpers/upload/deleteFile");
+const deleteFile = require("../helpers/upload/deleteFile");
 
 module.exports = {
   postProduct: async (req, res) => {
@@ -79,6 +79,45 @@ module.exports = {
     } catch (error) {
       return helperWrapper.response(
         response,
+        400,
+        `Bad request (${error.message})`,
+        null
+      );
+    }
+  },
+  updateProduct: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const checkId = await productModel.getProductById(id);
+      if (checkId.length < 1) {
+        return helperWrapper.response(
+          res,
+          404,
+          `Data by id ${id} not found !`,
+          null
+        );
+      }
+      const { productName, price, stock } = req.body;
+      const setData = {
+        productName,
+        productImage: req.file ? req.file.filename : null,
+        price,
+        stock,
+        updatedAt: new Date(Date.now()),
+      };
+      Object.keys(setData).forEach((data) => {
+        if (!setData[data]) {
+          delete setData[data];
+        }
+      });
+      if (req.file && checkId[0].productImage) {
+        deleteFile(`public/uploads/${checkId[0].productImage}`);
+      }
+      const result = await productModel.updateProduct(setData, id);
+      return helperWrapper.response(res, 200, "Success update data", result);
+    } catch (error) {
+      return helperWrapper.response(
+        res,
         400,
         `Bad request (${error.message})`,
         null
