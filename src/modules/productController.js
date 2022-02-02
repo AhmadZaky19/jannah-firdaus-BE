@@ -33,4 +33,56 @@ module.exports = {
       );
     }
   },
+  getAllProduct: async (request, response) => {
+    try {
+      let { search, sort, order, page, limit } = request.query;
+      page = Number(page) || 1;
+      limit = Number(limit) || 4;
+      search = search || "";
+      sort = sort || "createdAt";
+      order = order || "desc";
+      const offset = page * limit - limit;
+      const totalData = await productModel.getCountProduct(search);
+      const totalPage = Math.ceil(totalData / limit);
+      const pageInfo = {
+        page,
+        totalPage,
+        limit,
+        totalData,
+      };
+      const result = await productModel.getAllProduct(
+        search,
+        sort,
+        order,
+        limit,
+        offset
+      );
+      if (result.length < 1) {
+        return helperWrapper.response(
+          response,
+          200,
+          "Product not found",
+          result
+        );
+      }
+      if (page > totalPage) {
+        return helperWrapper.response(response, 400, "Page not found", null);
+      }
+
+      return helperWrapper.response(
+        response,
+        200,
+        "Success get data",
+        result,
+        pageInfo
+      );
+    } catch (error) {
+      return helperWrapper.response(
+        response,
+        400,
+        `Bad request (${error.message})`,
+        null
+      );
+    }
+  },
 };
