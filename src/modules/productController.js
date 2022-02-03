@@ -122,7 +122,7 @@ module.exports = {
         }
       });
       if (req.file && checkId[0].productImage) {
-        deleteFile(`public/uploads/${checkId[0].productImage}`);
+        deleteFile(`public/prod/${checkId[0].productImage}`);
       }
       const result = await productModel.updateProduct(setData, id);
       return helperWrapper.response(res, 200, "Success update data", result);
@@ -148,7 +148,7 @@ module.exports = {
         );
       }
       if (checkId[0].productImage) {
-        deleteFile(`public/uploads/${checkId[0].productImage}`);
+        deleteFile(`public/prod/${checkId[0].productImage}`);
       }
       const result = await productModel.deleteProduct(id);
       return helperWrapper.response(
